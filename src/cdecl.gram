@@ -1,0 +1,24 @@
+grammar CDecl;
+
+<-String val;->
+
+vars: TYPE_NAME name restNames SEMICOLON vars { res.val = TYPE_NAME.getName() + " " + name.val + restNames.val + ";\n" + vars.val; }
+    | EPS { res.val = ""; }
+    ;
+
+name: POINTER name { res.val = POINTER.getName() + name.val; }
+    | VAR_NAME { res.val = VAR_NAME.getName(); }
+    ;
+
+restNames: COMMA name restNames { res.val = COMMA.getName() + name.val + restNames.val; }
+         | EPS { res.val = ""; }
+         ;
+
+
+SEMICOLON: ";";
+COMMA: ",";
+TYPE_NAME: "(\bint\b|\bdouble\b|\bfloat\b|\bbool\b)";
+VAR_NAME: "[A-Za-z_][A-Za-z0-9_]*";
+POINTER: "\*";
+
+SKIP: "[ \n\t\r]+";

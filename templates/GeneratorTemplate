@@ -1,0 +1,48 @@
+package ${name};
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class ${name}Parser {
+    private ${name}LexicalAnalyzer lexer;
+
+    public Node parse(String input) throws ParseException {
+        this.lexer = new ${name}LexicalAnalyzer(input);
+        lexer.nextToken();
+        return ${startRule}();
+    }
+
+    public static class Node {
+${vars}
+        private String name;
+        private Rule rule;
+        private List<Node> children = new ArrayList<>();
+
+        public Node(String name, Rule rule) {
+            this.name = name;
+            this.rule = rule;
+        }
+
+        public List<Node> getChildren() {
+            return children;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Rule getRule() {
+            return rule;
+        }
+    }
+
+    private void checkToken(Rule expectedRule) throws ParseException {
+        Rule curRule = lexer.getCurTokenRule();
+        if (expectedRule != curRule) {
+            throw new ParseException("Expected token: " + expectedRule.name() + ", but given " + curRule.name(), lexer.getCurPos());
+        }
+        lexer.nextToken();
+    }
+

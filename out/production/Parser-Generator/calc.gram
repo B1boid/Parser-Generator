@@ -1,0 +1,44 @@
+grammar Calc;
+
+<-int val;->
+
+
+vAddSub: vMulDiv wAddSub(vMulDiv.val) { res.val = wAddSub.val; };
+wAddSub[int acc]: ADD vMulDiv wAddSub(acc + vMulDiv.val) { res.val = wAddSub.val; }
+                | SUB vMulDiv wAddSub(acc - vMulDiv.val) { res.val = wAddSub.val; }
+                | EPS  { res.val = acc; }
+                ;
+
+vMulDiv: vMinus wMulDiv(vMinus.val) { res.val = wMulDiv.val; };
+wMulDiv[int acc]: MUL vMinus wMulDiv(acc * vMinus.val) { res.val = wMulDiv.val; }
+                | DIV vMinus wMulDiv(acc / vMinus.val) { res.val = wMulDiv.val; }
+                | EPS  { res.val = acc; }
+                ;
+
+vMinus: SUB vMinus { res.val = -vMinus.val; }
+      | vPow { res.val = vPow.val; }
+      ;
+
+vPow: vExpr wPow { res.val = (int) Math.pow(vExpr.val, wPow.val); };
+wPow: POW vPow { res.val = vPow.val; }
+    | EPS { res.val = 1; }
+    ;
+
+vExpr: NUM { res.val = Integer.parseInt(NUM.getName()); }
+     | R_OPEN vAddSub R_CLOSE { res.val = vAddSub.val; }
+     ;
+
+
+ADD: "\+";
+SUB: "-";
+MUL: "\*";
+DIV: "/";
+
+POW: "\^";
+
+R_OPEN: "\(";
+R_CLOSE: "\)";
+
+NUM: "\d+";
+
+SKIP: "[ \n\t\r]+";
